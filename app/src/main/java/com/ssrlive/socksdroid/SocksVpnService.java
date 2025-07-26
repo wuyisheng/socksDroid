@@ -1,5 +1,20 @@
 package com.ssrlive.socksdroid;
 
+import static com.ssrlive.socksdroid.BuildConfig.DEBUG;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_APP_BYPASS;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_APP_LIST;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_DNS;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_DNS_PORT;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_IPV6_PROXY;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_NAME;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_PASSWORD;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_PER_APP;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_PORT;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_ROUTE;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_SERVER;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_UDP_GW;
+import static com.ssrlive.socksdroid.util.Constants.INTENT_USERNAME;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,9 +32,6 @@ import com.ssrlive.socksdroid.util.Utility;
 
 import java.util.Locale;
 import java.util.Objects;
-
-import static com.ssrlive.socksdroid.util.Constants.*;
-import static com.ssrlive.socksdroid.BuildConfig.DEBUG;
 
 public class SocksVpnService extends VpnService {
     class VpnBinder extends IVpnService.Stub {
@@ -85,7 +97,8 @@ public class SocksVpnService extends VpnService {
         // Create the notification
         int NOTIFICATION_ID = 1;
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                new Intent(this, MainActivity.class),
+                PendingIntent.FLAG_MUTABLE);
         startForeground(NOTIFICATION_ID, builder
                 .setContentTitle(getString(R.string.notify_title))
                 .setContentText(String.format(getString(R.string.notify_msg), name))
