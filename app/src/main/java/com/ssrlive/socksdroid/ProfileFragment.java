@@ -49,7 +49,8 @@ import static com.ssrlive.socksdroid.util.Constants.PREF_SERVER_PORT;
 import static com.ssrlive.socksdroid.util.Constants.PREF_UDP_GW;
 import static com.ssrlive.socksdroid.util.Constants.PREF_UDP_PROXY;
 
-public class ProfileFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
+public class ProfileFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener,
+        Preference.OnPreferenceChangeListener,
         CompoundButton.OnCheckedChangeListener {
     private ProfileManager mManager;
     private Profile mProfile;
@@ -225,7 +226,6 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (resultCode == Activity.RESULT_OK) {
             Utility.startVpn(getActivity(), mProfile);
             checkState();
@@ -288,28 +288,13 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
 
         mPrefServer.setText(mProfile.getServer());
         mPrefPort.setText(String.valueOf(mProfile.getPort()));
-        mPrefPort.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-            @Override
-            public void onBindEditText(@NonNull EditText editText) {
-                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
-            }
-        });
+        mPrefPort.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED));
         mPrefUsername.setText(mProfile.getUsername());
         mPrefPassword.setText(mProfile.getPassword());
-        mPrefPassword.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-            @Override
-            public void onBindEditText(@NonNull EditText editText) {
-                editText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            }
-        });
+        mPrefPassword.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD));
         mPrefDns.setText(mProfile.getDns());
         mPrefDnsPort.setText(String.valueOf(mProfile.getDnsPort()));
-        mPrefDnsPort.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
-            @Override
-            public void onBindEditText(@NonNull EditText editText) {
-                editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
-            }
-        });
+        mPrefDnsPort.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED));
         mPrefUDPGW.setText(mProfile.getUDPGW());
         resetText(mPrefServer, mPrefPort, mPrefUsername, mPrefPassword, mPrefDns, mPrefDnsPort, mPrefUDPGW);
 
@@ -330,9 +315,9 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
             if (!p.getKey().equals("auth_password")) {
                 p.setSummary(p.getText());
             } else {
-                if (p.getText().length() > 0)
+                if (!p.getText().isEmpty())
                     p.setSummary(String.format(Locale.US,
-                            String.format(Locale.US, "%%0%dd", p.getText().length()), 0)
+                                    String.format(Locale.US, "%%0%dd", p.getText().length()), 0)
                             .replace("0", "*"));
                 else
                     p.setSummary("");
@@ -345,9 +330,9 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
             pref.setSummary(newValue.toString());
         } else {
             String text = newValue.toString();
-            if (text.length() > 0)
+            if (!text.isEmpty())
                 pref.setSummary(String.format(Locale.US,
-                        String.format(Locale.US, "%%0%dd", text.length()), 0)
+                                String.format(Locale.US, "%%0%dd", text.length()), 0)
                         .replace("0", "*"));
             else
                 pref.setSummary("");
@@ -361,31 +346,25 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.prof_add)
                 .setView(e)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int which) {
-                        String name = e.getText().toString().trim();
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    String name = e.getText().toString().trim();
 
-                        if (!TextUtils.isEmpty(name)) {
-                            Profile p = mManager.addProfile(name);
+                    if (!TextUtils.isEmpty(name)) {
+                        Profile p = mManager.addProfile(name);
 
-                            if (p != null) {
-                                mProfile = p;
-                                reload();
-                                return;
-                            }
+                        if (p != null) {
+                            mProfile = p;
+                            reload();
+                            return;
                         }
-
-                        Toast.makeText(getActivity(),
-                                String.format(getString(R.string.err_add_prof), name),
-                                Toast.LENGTH_SHORT).show();
                     }
+
+                    Toast.makeText(getActivity(),
+                            String.format(getString(R.string.err_add_prof), name),
+                            Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int which) {
+                .setNegativeButton(android.R.string.cancel, (d, which) -> {
 
-                    }
                 })
                 .create().show();
     }
@@ -394,24 +373,18 @@ public class ProfileFragment extends PreferenceFragmentCompat implements Prefere
         new AlertDialog.Builder(getActivity())
                 .setTitle(R.string.prof_del)
                 .setMessage(String.format(getString(R.string.prof_del_confirm), mProfile.getName()))
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int which) {
-                        if (!mManager.removeProfile(mProfile.getName())) {
-                            Toast.makeText(getActivity(),
-                                    getString(R.string.err_del_prof, mProfile.getName()),
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            mProfile = mManager.getDefault();
-                            reload();
-                        }
+                .setPositiveButton(android.R.string.ok, (d, which) -> {
+                    if (!mManager.removeProfile(mProfile.getName())) {
+                        Toast.makeText(getActivity(),
+                                getString(R.string.err_del_prof, mProfile.getName()),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        mProfile = mManager.getDefault();
+                        reload();
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface d, int which) {
+                .setNegativeButton(android.R.string.cancel, (d, which) -> {
 
-                    }
                 })
                 .create().show();
     }

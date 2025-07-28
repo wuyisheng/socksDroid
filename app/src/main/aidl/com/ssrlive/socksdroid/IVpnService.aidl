@@ -1,7 +1,6 @@
 package com.ssrlive.socksdroid;
 
-interface IVpnService
-{
+interface IVpnService{
 	boolean isRunning();
 	void stop();
 }

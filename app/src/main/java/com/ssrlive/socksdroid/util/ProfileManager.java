@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ssrlive.socksdroid.R;
+
 import static com.ssrlive.socksdroid.util.Constants.*;
 
 public class ProfileManager {
@@ -22,11 +23,8 @@ public class ProfileManager {
 
     private List<String> getProfileList() {
         List<String> mProfiles = new ArrayList<>();
-        mProfiles.clear();
         mProfiles.add(mContext.getString(R.string.prof_default));
-
         String[] profiles = mPref.getString(PREF_PROFILE, "").split("\n");
-
         for (String p : profiles) {
             if (!TextUtils.isEmpty(p)) {
                 mProfiles.add(p);
@@ -74,12 +72,9 @@ public class ProfileManager {
         if (name.equals(mProfiles.get(0)) || !mProfiles.contains(name)) {
             return false;
         }
-
         new Profile(mPref, name).delete();
-
         mProfiles.remove(0);
         mProfiles.remove(name);
-
         mPref.edit().putString(PREF_PROFILE, Utility.join(mProfiles, "\n"))
                 .remove(PREF_LAST_PROFILE).apply();
 

@@ -28,27 +28,27 @@ Java_com_ssrlive_socksdroid_System_sendfd(JNIEnv *env, jclass clazz, jint tun_fd
     struct sockaddr_un addr;
     const char *sockpath;
 
-    if ( (fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         LOGE("socket() failed: %s (socket fd = %d)\n", strerror(errno), fd);
-        return (jint)-1;
+        return (jint) -1;
     }
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
     sockpath = env->GetStringUTFChars(sock, 0);
-    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path)-1);
+    strncpy(addr.sun_path, sockpath, sizeof(addr.sun_path) - 1);
     env->ReleaseStringUTFChars(sock, sockpath);
 
-    if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
+    if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
         LOGE("connect() failed: %s (fd = %d)\n", strerror(errno), fd);
         close(fd);
-        return (jint)-1;
+        return (jint) -1;
     }
 
     if (ancil_send_fd(fd, tun_fd)) {
         LOGE("ancil_send_fd: %s", strerror(errno));
         close(fd);
-        return (jint)-1;
+        return (jint) -1;
     }
 
     close(fd);
@@ -58,20 +58,18 @@ Java_com_ssrlive_socksdroid_System_sendfd(JNIEnv *env, jclass clazz, jint tun_fd
 static const char *classPathName = "com/ssrlive/socksdroid/System";
 
 static JNINativeMethod method_table[] = {
-    { "jniclose", "(I)V",
-        (void*) Java_com_ssrlive_socksdroid_System_jniclose },
-    { "sendfd", "(ILjava/lang/String;)I",
-        (void*) Java_com_ssrlive_socksdroid_System_sendfd }
+        {"jniclose", "(I)V",
+                (void *) Java_com_ssrlive_socksdroid_System_jniclose},
+        {"sendfd",   "(ILjava/lang/String;)I",
+                (void *) Java_com_ssrlive_socksdroid_System_sendfd}
 };
-
 
 
 /*
  * Register several native methods for one class.
  */
-static int registerNativeMethods(JNIEnv* env, const char* className,
-    JNINativeMethod* gMethods, int numMethods)
-{
+static int registerNativeMethods(JNIEnv *env, const char *className,
+                                 JNINativeMethod *gMethods, int numMethods) {
     jclass clazz;
 
     clazz = env->FindClass(className);
@@ -92,14 +90,13 @@ static int registerNativeMethods(JNIEnv* env, const char* className,
  *
  * returns JNI_TRUE on success.
  */
-static int registerNatives(JNIEnv* env)
-{
-  if (!registerNativeMethods(env, classPathName, method_table,
-                 sizeof(method_table) / sizeof(method_table[0]))) {
-    return JNI_FALSE;
-  }
+static int registerNatives(JNIEnv *env) {
+    if (!registerNativeMethods(env, classPathName, method_table,
+                               sizeof(method_table) / sizeof(method_table[0]))) {
+        return JNI_FALSE;
+    }
 
-  return JNI_TRUE;
+    return JNI_TRUE;
 }
 
 /*
@@ -107,15 +104,15 @@ static int registerNatives(JNIEnv* env)
  */
 
 typedef union {
-    JNIEnv* env;
-    void* venv;
+    JNIEnv *env;
+    void *venv;
 } UnionJNIEnvToVoid;
 
-jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     UnionJNIEnvToVoid uenv;
     uenv.venv = NULL;
     jint result = -1;
-    JNIEnv* env = NULL;
+    JNIEnv *env = NULL;
 
     LOGI("JNI_OnLoad");
 
@@ -132,6 +129,6 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     result = JNI_VERSION_1_4;
 
-bail:
+    bail:
     return result;
 }

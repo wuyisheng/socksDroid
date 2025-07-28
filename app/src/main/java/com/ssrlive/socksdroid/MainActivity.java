@@ -8,7 +8,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         this.getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new ProfileFragment()).commit();
     }
 }

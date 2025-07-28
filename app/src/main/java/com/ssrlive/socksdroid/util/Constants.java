@@ -1,7 +1,6 @@
 package com.ssrlive.socksdroid.util;
 
-public class Constants
-{
+public class Constants {
     public static final String ROUTE_ALL = "all",
             ROUTE_CHN = "chn";
 

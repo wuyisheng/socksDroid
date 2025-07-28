@@ -46,7 +46,7 @@ public class SocksVpnService extends VpnService {
         }
     }
 
-    private static final String TAG = SocksVpnService.class.getSimpleName();
+    private static final String TAG = "SocksVpnService";
 
     private ParcelFileDescriptor mInterface;
     private boolean mRunning = false;
@@ -54,10 +54,7 @@ public class SocksVpnService extends VpnService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "starting");
-        }
+        Log.d(TAG, "starting");
 
         if (intent == null) {
             return START_STICKY;
@@ -85,8 +82,8 @@ public class SocksVpnService extends VpnService {
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT >= 26) {
             String NOTIFICATION_CHANNEL_ID = "com.ssrlive.socksdroid";
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                    getString(R.string.channel_name), NotificationManager.IMPORTANCE_NONE);
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, getString(R.string.channel_name),
+                    NotificationManager.IMPORTANCE_NONE);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             Objects.requireNonNull(notificationManager).createNotificationChannel(channel);
             builder = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID);
@@ -97,24 +94,22 @@ public class SocksVpnService extends VpnService {
         // Create the notification
         int NOTIFICATION_ID = 1;
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class),
-                PendingIntent.FLAG_MUTABLE);
-        startForeground(NOTIFICATION_ID, builder
-                .setContentTitle(getString(R.string.notify_title))
-                .setContentText(String.format(getString(R.string.notify_msg), name))
-                .setPriority(Notification.PRIORITY_MIN)
-                .setSmallIcon(R.drawable.ic_vpn)
-                .setContentIntent(contentIntent)
-                .build());
+                new Intent(this, MainActivity.class), PendingIntent.FLAG_MUTABLE);
+        startForeground(NOTIFICATION_ID, builder.setContentTitle(getString(R.string.notify_title)
+        ).setContentText(String.format(getString(R.string.notify_msg), name)
+        ).setPriority(Notification.PRIORITY_MIN
+        ).setSmallIcon(R.drawable.ic_vpn
+        ).setContentIntent(contentIntent
+        ).build());
 
         // Create an fd.
         configure(name, route, perApp, appBypass, appList, ipv6);
 
-        if (DEBUG)
-            Log.d(TAG, "fd: " + mInterface.getFd());
+        Log.d(TAG, "fd: " + mInterface.getFd());
 
-        if (mInterface != null)
+        if (mInterface != null) {
             start(mInterface.getFd(), server, port, username, passwd, dns, dnsPort, ipv6, udpgw);
+        }
 
         return START_STICKY;
     }
@@ -155,15 +150,11 @@ public class SocksVpnService extends VpnService {
 
     private void configure(String name, String route, boolean perApp, boolean bypass, String[] apps, boolean ipv6) {
         Builder b = new Builder();
-        b.setMtu(1500)
-                .setSession(name)
-                .addAddress("26.26.26.1", 24)
-                .addDnsServer("8.8.8.8");
+        b.setMtu(1500).setSession(name).addAddress("26.26.26.1", 24).addDnsServer("8.8.8.8");
 
         if (ipv6) {
             // Route all IPv6 traffic
-            b.addAddress("fdfe:dcba:9876::1", 126)
-                    .addRoute("::", 0);
+            b.addAddress("fdfe:dcba:9876::1", 126).addRoute("::", 0);
         }
 
         Routes.addRoutes(this, b, route);
@@ -191,9 +182,7 @@ public class SocksVpnService extends VpnService {
                 }
 
                 for (String p : apps) {
-                    if (TextUtils.isEmpty(p))
-                        continue;
-
+                    if (TextUtils.isEmpty(p)) continue;
                     try {
                         b.addDisallowedApplication(p.trim());
                     } catch (Exception e) {
@@ -205,7 +194,6 @@ public class SocksVpnService extends VpnService {
                     if (TextUtils.isEmpty(p) || p.trim().equals("com.ssrlive.socksdroid")) {
                         continue;
                     }
-
                     try {
                         b.addAllowedApplication(p.trim());
                     } catch (Exception e) {
@@ -223,18 +211,24 @@ public class SocksVpnService extends VpnService {
         Utility.makePdnsdConf(this, dns, dnsPort);
 
         Utility.exec(String.format(Locale.US, "%s/libpdnsd.so -c %s/pdnsd.conf",
-                getApplicationInfo().nativeLibraryDir, getFilesDir()));
+                getApplicationInfo().nativeLibraryDir,
+                getFilesDir()));
 
         String command = String.format(Locale.US,
                 "%s/libtun2socks.so --netif-ipaddr 26.26.26.2"
                         + " --netif-netmask 255.255.255.0"
                         + " --socks-server-addr %s:%d"
-                        + " --tunfd %d"
-                        + " --tunmtu 1500"
+                        + " --tunfd %d" + " --tunmtu 1500"
                         + " --loglevel 3"
                         + " --pid %s/tun2socks.pid"
-                        + " --sock %s/sock_path"
-                , getApplicationInfo().nativeLibraryDir, server, port, fd, getFilesDir(), getApplicationInfo().dataDir);
+                        + " --sock %s/sock_path",
+                getApplicationInfo().nativeLibraryDir,
+                server,
+                port,
+                fd,
+                getFilesDir(),
+                getApplicationInfo().dataDir
+        );
 
         if (user != null) {
             command += " --username " + user;
@@ -267,11 +261,9 @@ public class SocksVpnService extends VpnService {
                 mRunning = true;
                 return;
             }
-
             i++;
-
             try {
-                Thread.sleep(1000 * i);
+                Thread.sleep(1000L * i);
             } catch (Exception e) {
                 e.printStackTrace();
             }

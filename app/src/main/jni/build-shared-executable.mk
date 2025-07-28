@@ -15,6 +15,7 @@
 # this file is included from Android.mk files to build a target-specific
 # executable program
 #
+
 # Modified by @Mygod, based on:
 #   https://android.googlesource.com/platform/ndk/+/a355a4e/build/core/build-shared-library.mk
 #   https://android.googlesource.com/platform/ndk/+/a355a4e/build/core/build-executable.mk
@@ -23,6 +24,7 @@ LOCAL_MAKEFILE     := $(local-makefile)
 $(call check-defined-LOCAL_MODULE,$(LOCAL_BUILD_SCRIPT))
 $(call check-LOCAL_MODULE,$(LOCAL_MAKEFILE))
 $(call check-LOCAL_MODULE_FILENAME)
+
 # we are building target objects
 my := TARGET_
 $(call handle-module-filename,lib,$(TARGET_SONAME_EXTENSION))

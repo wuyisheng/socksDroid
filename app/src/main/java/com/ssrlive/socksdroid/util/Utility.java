@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.ssrlive.socksdroid.R;
 import com.ssrlive.socksdroid.SocksVpnService;
+
 import static com.ssrlive.socksdroid.util.Constants.*;
 
 public class Utility {
@@ -30,13 +31,12 @@ public class Utility {
 
     public static void killPidFile(String f) {
         File file = new File(f);
-
         if (!file.exists()) {
             return;
         }
-
         InputStream i;
         try {
+            //noinspection IOStreamConstructor
             i = new FileInputStream(file);
         } catch (Exception e) {
             return;
@@ -58,7 +58,7 @@ public class Utility {
         try {
             int pid = Integer.parseInt(str.toString().trim().replace("\n", ""));
             Runtime.getRuntime().exec("kill " + pid).waitFor();
-            if(!file.delete())
+            if (!file.delete())
                 Log.w(TAG, "failed to delete pidfile");
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,10 +86,11 @@ public class Utility {
         File f = new File(context.getFilesDir() + "/pdnsd.conf");
 
         if (f.exists()) {
-            if(!f.delete())
+            if (!f.delete())
                 Log.w(TAG, "failed to delete pdnsd.conf");
         }
 
+        Log.d(TAG, "pdnsd.conf: " + conf);
         try {
             OutputStream out = new FileOutputStream(f);
             out.write(conf.getBytes());
@@ -103,7 +104,7 @@ public class Utility {
 
         if (!cache.exists()) {
             try {
-                if(!cache.createNewFile())
+                if (!cache.createNewFile())
                     Log.w(TAG, "failed to create pdnsd.cache");
             } catch (Exception e) {
                 e.printStackTrace();

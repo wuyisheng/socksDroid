@@ -4,12 +4,13 @@ import android.content.Context;
 import android.net.VpnService;
 
 import com.ssrlive.socksdroid.R;
+
 import static com.ssrlive.socksdroid.util.Constants.*;
 
 public class Routes {
     public static void addRoutes(Context context, VpnService.Builder builder, String name) {
         String[] routes;
-        if(ROUTE_CHN.equals(name)) {
+        if (ROUTE_CHN.equals(name)) {
             routes = context.getResources().getStringArray(R.array.simple_route);
         } else {
             routes = new String[]{"0.0.0.0/0"};
