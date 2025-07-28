@@ -39,6 +39,10 @@ android {
     }
     buildToolsVersion '31.0.0'
     ndkVersion = '23.1.7779620'
+    buildFeatures {
+        aidl true
+    }
+    namespace 'com.ssrlive.socksdroid'
 }
 
 dependencies {
